@@ -12,6 +12,7 @@ export function addNote(text) {
   });
   notes.push(note);
   noteById[id] = note;
+  return id;
 }
 
 export function removeNote(id) {

@@ -1,3 +1,18 @@
+input AddNoteInput {
+  text: String
+  clientMutationId: String
+}
+
+type AddNotePayload {
+  noteEdge: NoteEdge
+  clientMutationId: String
+}
+
+# Our mutation object
+type Mutation {
+  addNote(input: AddNoteInput!): AddNotePayload
+}
+
 # An object with an ID
 interface Node {
   # The id of the object.

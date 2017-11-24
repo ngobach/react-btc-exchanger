@@ -71,7 +71,7 @@ const GraphQLNote = new GraphQLObjectType({
   interfaces: [nodeInterface],
 });
 
-const { connectionType: NoteConnection } = connectionDefinitions({
+const { connectionType: NoteConnection, edgeType: NoteEdge } = connectionDefinitions({
   name: 'Note',
   nodeType: GraphQLNote,
 });
@@ -90,6 +90,40 @@ const Query = new GraphQLObjectType({
   },
 });
 
+const GraphQLAddNoteMutation = mutationWithClientMutationId({
+  name: 'AddNote',
+  inputFields: {
+    text: {
+      type: GraphQLString,
+    },
+  },
+  outputFields: {
+    noteEdge: {
+      type: NoteEdge,
+      resolve: ({ localId }) => {
+        const note = getNote(localId);
+        return {
+          cursor: cursorForObjectInConnection(getAllNotes(), note),
+          node: note,
+        };
+      },
+    },
+  },
+  mutateAndGetPayload: ({ text }) => {
+    const localId = addNote(text);
+    return localId;
+  },
+});
+
+const Mutation = new GraphQLObjectType({
+  name: 'Mutation',
+  description: 'Our mutation object',
+  fields: {
+    addNote: GraphQLAddNoteMutation,
+  },
+});
+
 export const schema = new GraphQLSchema({
   query: Query,
+  mutation: Mutation,
 });
