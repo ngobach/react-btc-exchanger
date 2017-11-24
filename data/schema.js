@@ -110,8 +110,7 @@ const GraphQLAddNoteMutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: ({ text }) => {
-    const localId = addNote(text);
-    return localId;
+    return { localId: addNote(text) };
   },
 });
 
