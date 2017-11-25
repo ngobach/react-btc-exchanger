@@ -63,12 +63,17 @@ type PageInfo {
 
 # Root of liveness
 type Query {
-  # All the notes
-  notes(after: String, first: Int, before: String, last: Int): NoteConnection
+  viewer: User
 
   # Fetches an object given its ID
   node(
     # The ID of an object
     id: ID!
   ): Node
+}
+
+type User implements Node {
+  # The ID of an object
+  id: ID!
+  notes(after: String, first: Int, before: String, last: Int): NoteConnection
 }

@@ -3,6 +3,7 @@ let notes = [];
 const noteById = {};
 
 export class Note {}
+export class User {}
 
 export function addNote(text) {
   const id = `${counter++}`;
@@ -31,6 +32,12 @@ export function getAllNotes() {
 
 export function updateNote(id, text) {
   noteById[id].text = text;
+}
+
+const defaultUser = Object.assign(new User(), { id: 'bachnx' });
+
+export function getUser() {
+  return defaultUser;
 }
 
 addNote('Holysteel');

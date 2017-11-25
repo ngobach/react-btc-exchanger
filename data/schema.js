@@ -35,25 +35,31 @@ import {
 
 import {
   Note,
+  User,
   addNote,
   getNote,
   getAllNotes,
   removeNote,
-  updateNote
+  updateNote,
+  getUser,
 } from './database';
+
+const defaultUser = getUser();
 
 const { nodeField, nodeInterface } = nodeDefinitions((globalId, ctx) => {
   const { type, id } = fromGlobalId(globalId);
   if (type == 'Note') {
     return getNote(id);
+  } else if (type == 'User') {
+    return getUser();
   }
-
   return null;
 }, (obj, ctx) => {
-  if (ctx instanceof Note) {
+  if (obj instanceof Note) {
     return GraphQLNote;
+  } else if (obj instanceof User) {
+    return GraphQLUser;
   }
-
   return null;
 });
 
@@ -76,15 +82,26 @@ const { connectionType: NoteConnection, edgeType: NoteEdge } = connectionDefinit
   nodeType: GraphQLNote,
 });
 
+const GraphQLUser = new GraphQLObjectType({
+  name: 'User',
+  fields: {
+    id: globalIdField('User'),
+    notes: {
+      type: NoteConnection,
+      args: connectionArgs,
+      resolve: (_, args) => connectionFromArray(getAllNotes(), args),
+    }
+  },
+  interfaces: [nodeInterface],
+});
+
 const Query = new GraphQLObjectType({
   name: 'Query',
   description: 'Root of liveness',
   fields: {
-    notes: {
-      type: NoteConnection,
-      description: 'All the notes',
-      args: connectionArgs,
-      resolve: (_, args) => connectionFromArray(getAllNotes(), args),
+    viewer: {
+      type: GraphQLUser,
+      resolve: () => defaultUser,
     },
     node: nodeField,
   },

@@ -1,5 +1,4 @@
 import { commitMutation, graphql } from 'react-relay';
-import { ConnectionHandler } from 'relay-runtime';
 
 const mutation = graphql`
   mutation AddNoteMutation($input: AddNoteInput!) {
@@ -15,7 +14,8 @@ const mutation = graphql`
   }
 `;
 
-export const commit = (env, text) => {
+export const commit = (env, viewerId, text) => {
+  console.log('Viewer id: ', viewerId);
   return commitMutation(env, {
     variables: {
       input: {
@@ -23,10 +23,16 @@ export const commit = (env, text) => {
       },
     },
     mutation,
-    updater: (store) => {
-      const payload = store.getRootField('addNote');
-      const newEdge = payload.getLinkedRecord('noteEdge');
-      ConnectionHandler.
-    },
+    configs: [
+      {
+        type: 'RANGE_ADD',
+        parentID: viewerId,
+        connectionInfo: [{
+          key: 'NoteApp_notes',
+          rangeBehavior: 'append',
+        }],
+        edgeName: 'noteEdge',        
+      },
+    ],
   });
 };

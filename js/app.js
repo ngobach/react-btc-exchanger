@@ -46,15 +46,15 @@ ReactDOM.render(
     environment={modernEnvironment}
     query={graphql`
       query appQuery {
-        notes {
-          ...NoteApp_notes
+        viewer {
+          ...NoteApp_viewer
         }
       }
     `}
     variables={{}}
     render={({error, props}) => {
       if (props) {
-        return <NoteApp notes={props.notes} />;
+        return <NoteApp notes={props.viewer.notes} viewer={props.viewer} />;
       } else {
         return <div>Loading</div>;
       }

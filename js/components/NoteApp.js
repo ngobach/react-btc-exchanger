@@ -15,7 +15,7 @@ class NoteApp extends React.Component {
   }
 
   _addNote() {
-    addNoteMutation(this.props.relay.environment, this.state.text);
+    addNoteMutation(this.props.relay.environment, this.props.viewer.id, this.state.text);
     this.setState({ text: '' });
   }
 
@@ -43,7 +43,7 @@ class NoteApp extends React.Component {
         <section className="section">
           <div className="container">
             <div className="items">
-              {this.props.notes.edges.map(({node}) => (
+              {this.props.viewer.notes.edges.map(({node}) => (
                 <Note note={node} key={node.id}/>
               ))}
             </div>
@@ -78,15 +78,18 @@ class NoteApp extends React.Component {
   }
 }
 
-export default createFragmentContainer(NoteApp, {
-  notes: graphql`
-    fragment NoteApp_notes on NoteConnection @connection(key: "NoteApp_notes") {
-      edges {
-        node {
-          ...Note_note
-          id
+export default createFragmentContainer(NoteApp,
+  graphql`
+    fragment NoteApp_viewer on User {
+      id
+      notes(first: 1) @connection(key: "NoteApp_notes") {
+        edges {
+          node {
+            ...Note_note
+            id
+          }
         }
       }
     }
-  `,
-});
+  `
+);
