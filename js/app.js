@@ -50,7 +50,6 @@ ReactDOM.render(
         }
       }
     `}
-    variables={{}}
     render={({error, props}) => {
       if (props) {
         return <App viewer={props.viewer} />;

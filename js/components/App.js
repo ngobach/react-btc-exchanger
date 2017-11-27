@@ -7,12 +7,30 @@ class App extends React.Component {
   }
 
   render() {
-    return <div>Hello {this.props.viewer.id}</div>;
+    return (
+      <div>
+        Hello {this.props.viewer.id}
+        <ul>
+          {this.props.viewer.sites.edges.map(({node: { id, code, name }}) => (
+            <li key={id}>{code} ^-^ {name}</li>
+          ))}
+        </ul>
+      </div>
+    );
   }
 }
 
 export default createFragmentContainer(App, graphql`
   fragment App_viewer on User {
     id
+    sites {
+      edges {
+        node {
+          id
+          code
+          name
+        }
+      }
+    }
   }
 `);

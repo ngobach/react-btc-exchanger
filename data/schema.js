@@ -43,7 +43,7 @@ import {
 
 const { nodeField, nodeInterface } = nodeDefinitions((globalId, ctx) => {
   const { type, id } = fromGlobalId(globalId);
-  if (type == 'Note') {
+  if (type == 'Site') {
     return getSite(id);
   } else if (type == 'User') {
     return getUser();
@@ -83,7 +83,7 @@ const GraphQLUser = new GraphQLObjectType({
     sites: {
       type: SiteConnection,
       args: connectionArgs,
-      resolve: (_, args) => connectionFromArray(getAllSites(), args),
+      resolve: async (_, args) => connectionFromArray(await getAllSites(), args),
     },
   },
   interfaces: [nodeInterface],
