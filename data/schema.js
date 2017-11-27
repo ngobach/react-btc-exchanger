@@ -34,123 +34,69 @@ import {
 } from 'graphql-relay';
 
 import {
-  Note,
+  Site,
   User,
-  addNote,
-  getNote,
-  getAllNotes,
-  removeNote,
-  updateNote,
   getUser,
+  getSite,
+  getAllSites,
 } from './database';
-
-const defaultUser = getUser();
 
 const { nodeField, nodeInterface } = nodeDefinitions((globalId, ctx) => {
   const { type, id } = fromGlobalId(globalId);
   if (type == 'Note') {
-    return getNote(id);
+    return getSite(id);
   } else if (type == 'User') {
     return getUser();
   }
   return null;
 }, (obj, ctx) => {
-  if (obj instanceof Note) {
-    return GraphQLNote;
+  if (obj instanceof Site) {
+    return GraphQLSite;
   } else if (obj instanceof User) {
     return GraphQLUser;
   }
   return null;
 });
 
-const GraphQLNote = new GraphQLObjectType({
-  name: 'Note',
-  description: 'The Note object',
+const GraphQLSite = new GraphQLObjectType({
+  name: 'Site',
   fields: {
-    id: globalIdField('Note'),
-    text: {
-      type: GraphQLString,
-      description: 'The content of the note',
-      resolve: (obj) => obj.text,
-    },
+    id: globalIdField('Site'),
+    code: { type: new GraphQLNonNull(GraphQLString) },
+    name: { type: new GraphQLNonNull(GraphQLString) },
+    lastUpdate: { type: new GraphQLNonNull(GraphQLString) },
+    city: { type: new GraphQLNonNull(GraphQLString) },
+    status: { type: new GraphQLNonNull(GraphQLString) },
   },
   interfaces: [nodeInterface],
 });
 
-const { connectionType: NoteConnection, edgeType: NoteEdge } = connectionDefinitions({
-  name: 'Note',
-  nodeType: GraphQLNote,
+const { connectionType: SiteConnection, edgeType: SiteEdge } = connectionDefinitions({
+  name: 'Site',
+  nodeType: GraphQLSite,
 });
 
 const GraphQLUser = new GraphQLObjectType({
   name: 'User',
   fields: {
     id: globalIdField('User'),
-    notes: {
-      type: NoteConnection,
+    sites: {
+      type: SiteConnection,
       args: connectionArgs,
-      resolve: (_, args) => connectionFromArray(getAllNotes(), args),
-    }
+      resolve: (_, args) => connectionFromArray(getAllSites(), args),
+    },
   },
   interfaces: [nodeInterface],
 });
 
 const Query = new GraphQLObjectType({
   name: 'Query',
-  description: 'Root of liveness',
   fields: {
     viewer: {
       type: GraphQLUser,
-      resolve: () => defaultUser,
+      resolve: () => getUser(),
     },
     node: nodeField,
-  },
-});
-
-const GraphQLAddNoteMutation = mutationWithClientMutationId({
-  name: 'AddNote',
-  inputFields: {
-    text: {
-      type: GraphQLString,
-    },
-  },
-  outputFields: {
-    noteEdge: {
-      type: NoteEdge,
-      resolve: ({ localId }) => {
-        const note = getNote(localId);
-        return {
-          cursor: cursorForObjectInConnection(getAllNotes(), note),
-          node: note,
-        };
-      },
-    },
-  },
-  mutateAndGetPayload: ({ text }) => {
-    return { localId: addNote(text) };
-  },
-});
-
-const GraphQLRemoveNoteMutation = mutationWithClientMutationId({
-  name: 'RemoveNoteMutation',
-  inputFields: {
-    noteId: {
-      type: GraphQLID,
-    },
-    viewer: {
-      type: GraphQLID,
-    },
-  },
-  outputFields: {
-    removedNoteId: {
-      type: GraphQLID,
-      resolve: ({ noteId }) => noteId,
-    },
-  },
-  mutateAndGetPayload: ({ noteId, viewerId }) => {
-    const { id } = fromGlobalId(noteId);
-    removeNote(id);
-    return { noteId };
   },
 });
 
@@ -158,12 +104,10 @@ const Mutation = new GraphQLObjectType({
   name: 'Mutation',
   description: 'Our mutation object',
   fields: {
-    addNote: GraphQLAddNoteMutation,
-    removeNote: GraphQLRemoveNoteMutation,
   },
 });
 
 export const schema = new GraphQLSchema({
   query: Query,
-  mutation: Mutation,
+  // mutation: Mutation,
 });

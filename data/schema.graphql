@@ -1,50 +1,7 @@
-input AddNoteInput {
-  text: String
-  clientMutationId: String
-}
-
-type AddNotePayload {
-  noteEdge: NoteEdge
-  clientMutationId: String
-}
-
-# Our mutation object
-type Mutation {
-  addNote(input: AddNoteInput!): AddNotePayload
-  removeNote(input: RemoveNoteMutationInput!): RemoveNoteMutationPayload
-}
-
 # An object with an ID
 interface Node {
   # The id of the object.
   id: ID!
-}
-
-# The Note object
-type Note implements Node {
-  # The ID of an object
-  id: ID!
-
-  # The content of the note
-  text: String
-}
-
-# A connection to a list of items.
-type NoteConnection {
-  # Information to aid in pagination.
-  pageInfo: PageInfo!
-
-  # A list of edges.
-  edges: [NoteEdge]
-}
-
-# An edge in a connection.
-type NoteEdge {
-  # The item at the end of the edge
-  node: Note
-
-  # A cursor for use in pagination
-  cursor: String!
 }
 
 # Information about pagination in a connection.
@@ -62,7 +19,6 @@ type PageInfo {
   endCursor: String
 }
 
-# Root of liveness
 type Query {
   viewer: User
 
@@ -73,19 +29,36 @@ type Query {
   ): Node
 }
 
-input RemoveNoteMutationInput {
-  noteId: ID
-  viewer: ID
-  clientMutationId: String
+type Site implements Node {
+  # The ID of an object
+  id: ID!
+  code: String!
+  name: String!
+  lastUpdate: String!
+  city: String!
+  status: String!
 }
 
-type RemoveNoteMutationPayload {
-  removedNoteId: ID
-  clientMutationId: String
+# A connection to a list of items.
+type SiteConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [SiteEdge]
+}
+
+# An edge in a connection.
+type SiteEdge {
+  # The item at the end of the edge
+  node: Site
+
+  # A cursor for use in pagination
+  cursor: String!
 }
 
 type User implements Node {
   # The ID of an object
   id: ID!
-  notes(after: String, first: Int, before: String, last: Int): NoteConnection
+  sites(after: String, first: Int, before: String, last: Int): SiteConnection
 }

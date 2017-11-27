@@ -13,8 +13,7 @@ import {
   Store,
 } from 'relay-runtime';
 
-import NoteApp from './components/NoteApp';
-
+import App from './components/App';
 
 const mountNode = document.getElementById('root');
 
@@ -47,14 +46,14 @@ ReactDOM.render(
     query={graphql`
       query appQuery {
         viewer {
-          ...NoteApp_viewer
+          ...App_viewer
         }
       }
     `}
     variables={{}}
     render={({error, props}) => {
       if (props) {
-        return <NoteApp notes={props.viewer.notes} viewer={props.viewer} />;
+        return <App viewer={props.viewer} />;
       } else {
         return <div>Loading</div>;
       }
