@@ -1,7 +1,8 @@
 import React from 'react';
 import { createFragmentContainer, graphql } from 'react-relay';
 import Note from './Note';
-import { commit as addNoteMutation } from '../mutations/AddNoteMutation';
+import addNoteMutation from '../mutations/AddNoteMutation';
+import removeNoteMutation from '../mutations/RemoveNoteMutation';
 
 class NoteApp extends React.Component {
   constructor(props) {
@@ -11,12 +12,17 @@ class NoteApp extends React.Component {
     };
   
     this._addNote = this._addNote.bind(this);
+    this._removeNote = this._removeNote.bind(this);
     this._textChanged = this._textChanged.bind(this);
   }
 
   _addNote() {
     addNoteMutation(this.props.relay.environment, this.props.viewer.id, this.state.text);
     this.setState({ text: '' });
+  }
+
+  _removeNote(noteId) {
+    removeNoteMutation(this.props.relay.environment, this.props.viewer.id, noteId);
   }
 
   _textChanged(e) {
@@ -44,7 +50,7 @@ class NoteApp extends React.Component {
           <div className="container">
             <div className="items">
               {this.props.viewer.notes.edges.map(({node}) => (
-                <Note note={node} key={node.id}/>
+                <Note note={node} key={node.id} onRemove={this._removeNote.bind(null, node.id)}/>
               ))}
             </div>
           </div>
@@ -82,7 +88,7 @@ export default createFragmentContainer(NoteApp,
   graphql`
     fragment NoteApp_viewer on User {
       id
-      notes(first: 1) @connection(key: "NoteApp_notes") {
+      notes(first: 1000000) @connection(key: "NoteApp_notes") {
         edges {
           node {
             ...Note_note

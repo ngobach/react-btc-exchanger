@@ -131,11 +131,35 @@ const GraphQLAddNoteMutation = mutationWithClientMutationId({
   },
 });
 
+const GraphQLRemoveNoteMutation = mutationWithClientMutationId({
+  name: 'RemoveNoteMutation',
+  inputFields: {
+    noteId: {
+      type: GraphQLID,
+    },
+    viewer: {
+      type: GraphQLID,
+    },
+  },
+  outputFields: {
+    removedNoteId: {
+      type: GraphQLID,
+      resolve: ({ noteId }) => noteId,
+    },
+  },
+  mutateAndGetPayload: ({ noteId, viewerId }) => {
+    const { id } = fromGlobalId(noteId);
+    removeNote(id);
+    return { noteId };
+  },
+});
+
 const Mutation = new GraphQLObjectType({
   name: 'Mutation',
   description: 'Our mutation object',
   fields: {
     addNote: GraphQLAddNoteMutation,
+    removeNote: GraphQLRemoveNoteMutation,
   },
 });
 

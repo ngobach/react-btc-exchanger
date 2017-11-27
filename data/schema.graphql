@@ -11,6 +11,7 @@ type AddNotePayload {
 # Our mutation object
 type Mutation {
   addNote(input: AddNoteInput!): AddNotePayload
+  removeNote(input: RemoveNoteMutationInput!): RemoveNoteMutationPayload
 }
 
 # An object with an ID
@@ -70,6 +71,17 @@ type Query {
     # The ID of an object
     id: ID!
   ): Node
+}
+
+input RemoveNoteMutationInput {
+  noteId: ID
+  viewer: ID
+  clientMutationId: String
+}
+
+type RemoveNoteMutationPayload {
+  removedNoteId: ID
+  clientMutationId: String
 }
 
 type User implements Node {

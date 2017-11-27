@@ -14,8 +14,7 @@ const mutation = graphql`
   }
 `;
 
-export const commit = (env, viewerId, text) => {
-  console.log('Viewer id: ', viewerId);
+export default (env, viewerId, text) => {
   return commitMutation(env, {
     variables: {
       input: {
